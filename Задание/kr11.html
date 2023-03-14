@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="./task_11.js" defer></script>
+    <title>KR</title>
+  </head>
+  <body>
+    <section>
+      <h1>
+        Обработка базы косметических изделий (вариант 9, 10, 11 и 12 )
+      </h1>
+    </section>
+    <section>
+      <label for="marka">Введите бренд :</label>
+      <input value="covergirl" name="input" list="brand" id="marka" type="text" placeholder="Covergirl" autocomplete="on"
+      />
+      <datalist id="brand">
+        <option value="Almay"></option>
+        <option value="Anna Sui"></option>
+        <option value="Annabelle"></option>
+        <option value="Benefit"></option>
+        <option value="Burts Bees"></option>
+        <option value="Butter London"></option>
+        <option value="Cargo Cosmetics"></option>
+        <option value="China Glaze"></option>
+        <option value="Covergirl"></option>
+        <option value="Dalish"></option>
+        <option value="Dr. Hauschka"></option>
+        <option value="e.l.f."></option>
+        <option value="Essie"></option>
+        <option value="Iman"></option>
+        <option value="L'Oreal"></option>
+        <option value="Marcelle"></option>
+        <option value="Maybelline"></option>
+        <option value="Milani"></option>
+        <option value="Mineral Fusion"></option>
+        <option value="Misa"></option>
+        <option value="Mistura"></option>
+        <option value="Moov"></option>
+        <option value="NYX"></option>
+        <option value="Orly"></option>
+        <option value="Pacifica"></option>
+        <option value="Physicians Formula"></option>
+        <option value="Piggy Paint"></option>
+        <option value="Pure Anada"></option>
+        <option value="a"></option>
+        <option value="Salon Perfect"></option>
+        <option value="Sante"></option>
+        <option value="Sinful Colours"></option>
+        <option value="Smashbox"></option>
+        <option value="Stila"></option>
+        <option value="Suncoat"></option>
+        <option value="Wet n' Wild"></option>
+        <option value="Zorah"></option>
+      </datalist>
+
+      <br />
+      <label for="product">Введите тип продукта :</label>
+      <input value="lipstick" name="input" list="product_type" id="product" type="text" placeholder="Начните ввод на латинице" autocomplete="on"
+      />
+      <datalist id="product_type">
+        <option value="blush"></option>
+        <option value="bronzer"></option>
+        <option value="eyebrow"></option>
+        <option value="eyeliner"></option>
+        <option value="eyeshadow"></option>
+        <option value="foundation"></option>
+        <option value="lip_liner"></option>
+        <option value="lipstick"></option>
+        <option value="mascara"></option>
+        <option value="nail_polish"></option>
+      </datalist>
+      <button type="button" onclick="krData()">
+        Выполнить запрос
+      </button>
+    </section>
+
+    <div class="card_wrap"></div>
+    <script>
+      const krData = () => {
+    let brand_item = document.querySelector('#marka').value
+    let type_item = document.querySelector('#product').value
+
+    console.log(brand_item, type_item)
+
+    fetch(`http://makeup-api.herokuapp.com/api/v1/products.json?brand=${brand_item}&product_type=${type_item}`)
+    .then(response => response.json())
+    .catch ((err) => alert(err.message))
+    .then(response => processingData(response))
+
+}
+krData()
+
+const processingData = (response) => {
+
+    console.log('start sort');
+    console.log(`изначальный =>`);
+    console.log(response);
+
+
+    const sortNameObj = [...response]
+    const sortPriceObj = [...response]
+
+
+    sortNameObj.sort((a,b) => {
+        // console.log(a.name > b.name);
+        if (a.name > b.name) {
+            return 1
+        } else if (a.name < b.name){
+            return -1
+        } else {
+            return 0
+        }
+    })
+
+
+
+    sortPriceObj.sort((a,b) => {
+        if (a.price > b.price) {
+            return 1
+        } else if (a.price < b.price){
+            return -1
+        } else {
+            return 0
+        }
+    })
+    
+    console.log(`по имени =>`)
+    console.log(sortNameObj)
+    console.log(`по цене =>`)
+    console.log(sortPriceObj)
+
+    return render(sortPriceObj)
+}
+
+const render = (sortPriceObj) => {
+    document.querySelector('.card_wrap').insertAdjacentHTML(`beforebegin`,`<h1>${sortPriceObj[0].brand} </h1>`)
+
+    sortPriceObj.forEach(element => {
+        let patternCard = `
+        <div class="card">
+            <div class="title_name">${element.name}</div>
+            <img src="${element.image_link}" alt="">
+        </div>
+        `
+        document.querySelector('.card_wrap').insertAdjacentHTML(`afterbegin`, patternCard)
+    })
+}
+
+// http://makeup-api.herokuapp.com/api/v1/products.json?brand=maybelline
+// http://makeup-api.herokuapp.com/api/v1/products.json?brand=covergirl&product_type=lipstick
+    </script>
+  </body>
+</html>
